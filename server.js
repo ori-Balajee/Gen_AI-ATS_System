@@ -7,6 +7,7 @@ const app =express()
 app.use(express.json())
 connectToDB()
 
+// app.use()
 app.use('/api/auth', authRoute);
 
 
