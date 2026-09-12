@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
         { expiresIn: "1d" }
     )
 
-    res.cookie("token",token)
+    res.cookie("token", token)
 
     res.status(201).json({
         success: true,
@@ -51,21 +51,38 @@ const registerUser = async (req, res) => {
     })
 }
 
-const loginUser = async(req,res)=>{
-    const{email,password} = req.body;
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
 
-    const user = await User.findOne({email});
-    if(!user){
+    const user = await User.findOne({ email });
+    if (!user) {
         return res.status(400).json({
             success: false,
             message: "User does not exist"
         })
     }
 
-    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid email or password"
+        })
+    }
 
+    const token = jwt.sign({
+        id: user._id,
+        username: user.username
+    },
+    process.env.JWT_SECRET,
+    {expiresIn:"1d"})
 
-
+    res.cookie("token",token)
+    res.status(200).json({
+        id: user._id,
+        username: user.username,
+        email: user.email
+    })
 }
 
 module.exports = { registerUser }
