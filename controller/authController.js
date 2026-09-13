@@ -99,4 +99,13 @@ const logoutUser = async(req,res)=>{
     })
 }
 
-module.exports = { registerUser, loginUser, logoutUser }
+const getMe = async(req,res)=>{
+    const user = await User.findById(req.user.id);
+    res.status(200).json({
+        id:user._id,
+        username: user.username,
+        email: user.email
+    })
+}
+
+module.exports = { registerUser, loginUser, logoutUser, getMe }
